@@ -6,3 +6,4 @@ Flask-Login
 requests
 python-dotenv
 flask-restful
+Flask-RESTful
