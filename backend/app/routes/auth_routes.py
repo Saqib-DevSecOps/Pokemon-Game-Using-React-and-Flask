@@ -1,13 +1,12 @@
 from flask import Blueprint, request, jsonify
-from .models import User
+from app.models.user import User
 
 # Create blueprints for routes
-auth_routes = Blueprint('auth', __name__)
-user_routes = Blueprint('user', __name__)
+auth = Blueprint('auth', __name__)
 
 
 # Signup Route
-@auth_routes.route('/signup', methods=['POST'])
+@auth.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     username = data.get('username')
@@ -32,7 +31,7 @@ def signup():
 
 
 # Login Route
-@auth_routes.route('/login', methods=['POST'])
+@auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -47,14 +46,14 @@ def login():
 
 
 # Logout Route
-@auth_routes.route('/logout', methods=['POST'])
+@auth.route('/logout', methods=['POST'])
 def logout():
     # For simplicity, not implementing actual logout logic
     return jsonify({'message': 'Logout successful'}), 200
 
 
 # User Profile Route
-@user_routes.route('/profile/<int:user_id>', methods=['GET', 'PUT'])
+@auth.route('/profile/<int:user_id>', methods=['GET', 'PUT'])
 def user_profile(user_id):
     user = User.query.get_or_404(user_id)
 

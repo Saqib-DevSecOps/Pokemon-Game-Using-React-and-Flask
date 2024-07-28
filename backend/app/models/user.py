@@ -1,6 +1,8 @@
 from datetime import datetime
 from flask_login import UserMixin
-from . import bcrypt, db
+
+
+from app import bcrypt,db
 
 
 class User(db.Model, UserMixin):
