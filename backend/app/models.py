@@ -1,8 +1,6 @@
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-
-db = SQLAlchemy()
+from . import bcrypt, db
 
 
 class User(db.Model, UserMixin):
@@ -25,6 +23,12 @@ class User(db.Model, UserMixin):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
 
 class Pokemon(db.Model):

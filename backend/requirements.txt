@@ -7,3 +7,5 @@ requests
 python-dotenv
 flask-restful
 Flask-RESTful
+Flask-JWT-Extended
+flask-bcrypt
