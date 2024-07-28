@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.models.user import User
+from flask_jwt_extended import create_access_token
 
 # Create blueprints for routes
 auth = Blueprint('auth', __name__)
@@ -39,10 +40,10 @@ def login():
 
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
-        # For simplicity, not implementing session or JWT here
-        return jsonify({'message': 'Login successful'}), 200
-
-    return jsonify({'message': 'Invalid credentials'}), 401
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
 
 
 # Logout Route

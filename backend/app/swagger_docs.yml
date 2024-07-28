@@ -119,3 +119,58 @@ paths:
           description: "Profile updated successfully"
         404:
           description: "User not found"
+
+  /api/pokemon:
+    post:
+      tags:
+        - "pokemon"
+      summary: "Catch a Pokemon"
+      description: "Catch a Pokemon by name or get a random Pokemon."
+      operationId: "catchPokemon"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Pokemon name to catch"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              pokemon_name:
+                type: "string"
+                example: "pikachu"
+      responses:
+        201:
+          description: "Successfully caught the Pokemon"
+          schema:
+            type: "object"
+            properties:
+              pokemon_name:
+                type: "string"
+              base_hp:
+                type: "integer"
+              base_attack:
+                type: "integer"
+              base_defense:
+                type: "integer"
+              front_shiny_sprite:
+                type: "string"
+              other_sprite:
+                type: "string"
+        400:
+          description: "Bad request"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+        404:
+          description: "Pokemon not found"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
