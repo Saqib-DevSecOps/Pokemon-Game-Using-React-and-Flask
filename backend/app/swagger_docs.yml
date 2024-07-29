@@ -1,5 +1,3 @@
-# app/swagger_docs.yml
-
 swagger: "2.0"
 info:
   version: "1.0.0"
@@ -67,6 +65,11 @@ paths:
       responses:
         200:
           description: "Login successful"
+          schema:
+            type: "object"
+            properties:
+              access_token:
+                type: "string"
         401:
           description: "Invalid credentials"
 
@@ -123,7 +126,7 @@ paths:
   /api/pokemon:
     post:
       tags:
-        - "pokemon"
+        - "Pokemon"
       summary: "Catch a Pokemon"
       description: "Catch a Pokemon by name or get a random Pokemon."
       operationId: "catchPokemon"
@@ -174,3 +177,232 @@ paths:
             properties:
               error:
                 type: "string"
+
+  /api/my/pokemon:
+    get:
+      tags:
+        - "Pokemon"
+      summary: "Get My Pokemon"
+      description: "Retrieve the list of Pokemon owned by the logged-in user."
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Successfully retrieved the list of Pokemon."
+          schema:
+            type: "object"
+            properties:
+              pokemon:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Pokemon'
+        401:
+          description: "Unauthorized - Invalid or missing token."
+        403:
+          description: "Forbidden - The user does not have permission."
+
+  /api/pokemon/delete/{pokemon_id}:
+    post:
+      tags:
+        - "Pokemon"
+      summary: "Delete a Pokemon"
+      description: "Delete a specific Pokemon owned by the logged-in user."
+      parameters:
+        - name: "pokemon_id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "ID of the Pokemon to delete."
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Successfully deleted the Pokemon."
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+        401:
+          description: "Unauthorized - Invalid or missing token."
+        403:
+          description: "Forbidden - The user does not have permission to delete this Pokemon."
+        404:
+          description: "Not Found - The Pokemon does not exist."
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+
+  /api/battle:
+    post:
+      tags:
+        - "Battle"
+      summary: "Initiate a Pokemon battle"
+      description: "Initiate a Pokemon battle against a specified opponent or a random opponent."
+      operationId: "battle"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "JSON payload with battle details"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "opponent"
+              - "attacker"
+              - "defender"
+            properties:
+              opponent:
+                type: "string"
+                description: "Opponent username or 'random' for a random opponent"
+                example: "random"
+              attacker:
+                type: "string"
+                description: "Name of the Pokemon to attack with"
+                example: "Pikachu"
+              defender:
+                type: "string"
+                description: "Name of the opponent's Pokemon to defend against"
+                example: "Charmander"
+      responses:
+        200:
+          description: "Battle setup successful"
+          schema:
+            type: "object"
+            properties:
+              pokemons:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Pokemon'
+              enemy_pokemons:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Pokemon'
+              opponent:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                  username:
+                    type: "string"
+                  email:
+                    type: "string"
+        400:
+          description: "Bad Request - Invalid input data"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "No input data provided"
+        404:
+          description: "Not Found - User or Pokemon not found"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+                example: "User does not exist"
+        401:
+          description: "Unauthorized - Invalid or missing token"
+        403:
+          description: "Forbidden - The user does not have permission"
+      security:
+        - Bearer: []
+
+  /api/battle/{opponent_user_name}/fight:
+    get:
+      summary: "Get pokemons for the current user and the opponent"
+      parameters:
+        - in: "path"
+          name: "opponent_user_name"
+          required: true
+          type: "string"
+          description: "Username of the opponent"
+      responses:
+        200:
+          description: "A list of pokemons for the current user and the opponent"
+          schema:
+            type: "object"
+            properties:
+              pokemons:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Pokemon'
+              enemy_pokemons:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Pokemon'
+        404:
+          description: "No pokemons found for the opponent"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+    post:
+      summary: "Perform a battle between the current user's pokemon and the opponent's pokemon"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "attacker"
+              - "defender"
+            properties:
+              attacker:
+                type: "string"
+                description: "The name of the user's pokemon that is attacking"
+              defender:
+                type: "string"
+                description: "The name of the opponent's pokemon that is defending"
+      responses:
+        200:
+          description: "The result of the battle"
+          schema:
+            type: "object"
+            properties:
+              attacker_pokemon:
+                type: "string"
+              defender_pokemon:
+                type: "string"
+              winner:
+                type: "string"
+        404:
+          description: "No such pokemon found"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+
+securityDefinitions:
+  Bearer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+
+definitions:
+  Pokemon:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      base_hp:
+        type: "integer"
+      base_attack:
+        type: "integer"
+      base_defense:
+        type: "integer"
+      front_shiny_sprite:
+        type: "string"
+      other_sprite:
+        type: "string"

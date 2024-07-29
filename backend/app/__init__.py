@@ -34,4 +34,8 @@ def create_app():
     from .routes.pokemon_routes import pokemon_routes
     app.register_blueprint(pokemon_routes)
 
+    # Import and register admin views
+    from app.admin_views import register_admin_views
+    register_admin_views(app, db)
+
     return app

@@ -1,8 +1,7 @@
 from datetime import datetime
 from flask_login import UserMixin
 
-
-from app import bcrypt,db
+from app import bcrypt, db
 
 
 class User(db.Model, UserMixin):
@@ -29,6 +28,13 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+        }
+
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -44,6 +50,14 @@ class Pokemon(db.Model):
 
     def __repr__(self):
         return '<Pokemon %r>' % self.pokemon_name
+
+    def __init__(self, pokemon_name, base_hp, base_attack, base_defense, front_shiny_sprite, user_id):
+        self.pokemon_name = pokemon_name
+        self.base_hp = base_hp
+        self.base_attack = base_attack
+        self.base_defense = base_defense
+        self.front_shiny_sprite = front_shiny_sprite
+        self.user_id = user_id
 
     def save_to_db(self):
         db.session.add(self)
@@ -64,3 +78,15 @@ class Pokemon(db.Model):
                 owner2.kills += 1
                 db.session.commit()
                 pokemon.delete_pokemon()
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'pokemon_name': self.pokemon_name,
+            'base_hp': self.base_hp,
+            'base_attack': self.base_attack,
+            'base_defense': self.base_defense,
+            'front_shiny_sprite': self.front_shiny_sprite,
+            # 'other_sprite': self.other_sprite,
+            'user_id': self.user_id,
+        }

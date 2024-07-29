@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.models.user import User
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 # Create blueprints for routes
 auth = Blueprint('auth', __name__)
@@ -48,6 +48,8 @@ def login():
 
 # Logout Route
 @auth.route('/logout', methods=['POST'])
+@jwt_required()
+
 def logout():
     # For simplicity, not implementing actual logout logic
     return jsonify({'message': 'Logout successful'}), 200
@@ -55,7 +57,12 @@ def logout():
 
 # User Profile Route
 @auth.route('/profile/<int:user_id>', methods=['GET', 'PUT'])
+@jwt_required()
 def user_profile(user_id):
+    request_user_id = get_jwt_identity()
+    if request_user_id != user_id:
+        return jsonify({"error": "Not Found"}), 401
+
     user = User.query.get_or_404(user_id)
 
     if request.method == 'GET':
