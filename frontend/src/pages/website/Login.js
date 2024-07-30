@@ -44,8 +44,8 @@ const Login = () => {
             const result = await axiosInstance.post('/login', data);
             console.log(result);
             const token = result.data.access_token;
-
-            dispatch(loginSuccess(token));
+            console.log(token)
+            dispatch(loginSuccess({ access_token: token })); // Send the token as part of an object
 
             navigate('/catch-pokemon');
 
@@ -66,7 +66,7 @@ const Login = () => {
                     <div className="row align-items-center flex-row-reverse">
                         <div className="col-lg-6">
                             <div className="hero-thumb5-1">
-                                <img src={`${process.env.PUBLIC_URL}/website/img/pokemon-team.png`} alt="img"/>
+                                <img src={`${process.env.PUBLIC_URL}/website/img/pokemon.png`} alt="img"/>
                             </div>
                         </div>
                         <div className="col-lg-6">

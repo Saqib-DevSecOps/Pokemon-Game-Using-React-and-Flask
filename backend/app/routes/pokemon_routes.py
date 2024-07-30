@@ -13,18 +13,22 @@ pokemon_routes = Blueprint('pokemon_routes', __name__)
 def pokemon():
     data = request.get_json()
     pokemon_name = data.get('pokemon_name')
+    if pokemon_name is None or pokemon_name == "":
+        return jsonify({'message': 'No pokemon name'}), 400
 
     def pokemon_info(p_name):
         response = requests.get(f'https://pokeapi.co/api/v2/pokemon/{p_name}')
         if response.ok:
             data = response.json()
+            print("API Response:", data)  # Debugging line to check response structure
+
             return {
-                'pokemon_name': data['forms'][0]['name'],
+                'pokemon_name': data.get('name', 'Unknown'),
                 'base_hp': data['stats'][0]['base_stat'],
                 'base_attack': data['stats'][1]['base_stat'],
                 'base_defense': data['stats'][2]['base_stat'],
-                'front_shiny_sprite': data['sprites']['front_default'],
-                'other_sprite': data['sprites']['other']['official-artwork']['front_default'],
+                'front_shiny_sprite': data['sprites'].get('front_default'),
+                'other_sprite': data['sprites'].get('other', {}).get('official-artwork', {}).get('front_default'),
             }
 
         return None
@@ -45,7 +49,7 @@ def pokemon():
     base_hp = the_pokemon['base_hp']
     base_attack = the_pokemon['base_attack']
     base_defense = the_pokemon['base_defense']
-    front_shiny_sprite = the_pokemon.get('front_shiny_sprite') or the_pokemon['other_sprite']
+    front_shiny_sprite = the_pokemon['other_sprite'] or the_pokemon.get('front_shiny_sprite')
     user_id = get_jwt_identity()
     if not Pokemon.query.filter_by(pokemon_name=pokemon_name).first():
         if Pokemon.query.filter_by(user_id=user_id).count() < 5:

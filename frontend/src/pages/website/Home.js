@@ -1,12 +1,17 @@
 import Base from "../../components/website/Base";
+import {Link} from "react-router-dom";
+import React from "react";
+import {useSelector} from "react-redux";
 
 const Home = () => {
+    // Access the authentication state from Redux
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     return (
         <>
             <Base/>
 
 
-            <div className=" hero-5 " id="hero" data-bg-src="assets/img/hero/hero-4-bg.png">
+            <div className=" th-hero-wrapper m-5 hero-5 " id="hero" data-bg-src="assets/img/hero/hero-4-bg.png">
                 <div className="container">
                     <div className="row align-items-center flex-row-reverse">
                         <div className="col-lg-6">
@@ -36,12 +41,27 @@ const Home = () => {
                                     data-wow-duration="1.2s"
                                     data-wow-delay="0.5s"
                                 >
+                                    {!isAuthenticated ? (
+                                        <>
+                                            <Link to="/signup" className="th-btn style-border2">
+                                              <span className="btn-border">
+                                                Signup<i className="fa-solid fa-arrow-right ms-2"/>
+                                              </span>
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <li>
+                                                <Link to="/pokemon-battle" className="th-btn style-border2">
+                                              <span className="btn-border">
+                                                    Battle <i className="fa-solid fa-axe ms-2"/>
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
 
-                                    <a href="contact.html" className="th-btn style-border2">
-                                      <span className="btn-border">
-                                        Signup<i className="fa-solid fa-arrow-right ms-2"/>
-                                      </span>
-                                    </a>
+
                                 </div>
                             </div>
                         </div>

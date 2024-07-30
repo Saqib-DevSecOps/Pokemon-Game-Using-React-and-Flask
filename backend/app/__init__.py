@@ -1,9 +1,9 @@
 from flasgger import Swagger
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 
 from config import Config
@@ -25,6 +25,7 @@ def create_app():
     bcrypt.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
     jwt.init_app(app)
+    CORS(app)
 
     swagger = Swagger(app, template_file='swagger_docs.yml')
 

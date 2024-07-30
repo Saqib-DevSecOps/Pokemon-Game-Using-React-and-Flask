@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Blueprint, request, jsonify
 from app.models.user import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -40,7 +42,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
         return jsonify(access_token=access_token), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
@@ -49,7 +51,6 @@ def login():
 # Logout Route
 @auth.route('/logout', methods=['POST'])
 @jwt_required()
-
 def logout():
     # For simplicity, not implementing actual logout logic
     return jsonify({'message': 'Logout successful'}), 200
